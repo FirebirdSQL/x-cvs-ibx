@@ -154,7 +154,25 @@ type
     ibxeStartParamsError,
     ibxeOutputParsingError,
     ibxeUseSpecificProcedures,
-    ibxeSQLMonitorAlreadyPresent
+    ibxeSQLMonitorAlreadyPresent,
+    ibxeCantPrintValue,
+    ibxeEOFReached,
+    ibxeEOFInComment,
+    ibxeEOFInString,
+    ibxeParamNameExpected,
+    ibxeSuccess,
+    ibxeDelphiException,
+    ibxeNoOptionsSet,
+    ibxeNoDestinationDirectory,
+    ibxeNosourceDirectory,
+    ibxeNoUninstallFile,
+    ibxeOptionNeedsClient,
+    ibxeOptionNeedsServer,
+    ibxeInvalidOption,
+    ibxeInvalidOnErrorResult,
+    ibxeInvalidOnStatusResult,
+    ibxeDPBConstantUnknownEx,
+    ibxeTPBConstantUnknownEx
     );
 
   TStatusVector              = array[0..19] of ISC_STATUS;
@@ -267,7 +285,25 @@ const
     SStartParamsError,
     SOutputParsingError,
     SUseSpecificProcedures,
-    SSQLMonitorAlreadyPresent
+    SSQLMonitorAlreadyPresent,
+    SCantPrintValue,
+    SEOFReached,
+    SEOFInComment,
+    SEOFInString,
+    SParamNameExpected,
+    SSuccess,
+    SDelphiException,
+    SNoOptionsSet,
+    SNoDestinationDirectory,
+    SNosourceDirectory,
+    SNoUninstallFile,
+    SOptionNeedsClient,
+    SOptionNeedsServer,
+    SInvalidOption,
+    SInvalidOnErrorResult,
+    SInvalidOnStatusResult,
+    SDPBConstantUnknownEx,
+    STPBConstantUnknownEx
   );
 
 var

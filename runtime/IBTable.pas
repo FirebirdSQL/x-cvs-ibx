@@ -30,9 +30,9 @@ unit IBTable;
 
 interface
 
-uses Windows, SysUtils, Graphics, Classes, Controls, Db, StdVCL,
-     IB, IBDatabase, IBCustomDataSet, IBHeader, IBSQL, IBUtils;
-
+uses SysUtils, Classes, DB, IB, IBDatabase, IBCustomDataSet,
+     IBHeader, IBSQL, IBUtils;
+     
 type
 
 { TIBTable }
@@ -316,7 +316,8 @@ begin
                         'from RDB$RELATION_FIELDS R, RDB$FIELDS F ' + {do not localize}
                         'where R.RDB$RELATION_NAME = ' + {do not localize}
                         '''' +
-                        FormatIdentifierValue(Database.SQLDialect, FTableName) +
+                        FormatIdentifierValue(Database.SQLDialect,
+                          QuoteIdentifier(DataBase.SQLDialect, FTableName)) +
                         ''' ' +
                         'and R.RDB$FIELD_SOURCE = F.RDB$FIELD_NAME '+ {do not localize}
                         'order by R.RDB$FIELD_POSITION'; {do not localize}
@@ -332,38 +333,47 @@ begin
             FieldNo := Query.Current.ByName('RDB$FIELD_POSITION').AsInteger; {do not localize}
             Name := TrimRight(Query.Current.ByName('RDB$FIELD_NAME').AsString); {do not localize}
             case Query.Current.ByName('RDB$FIELD_TYPE').AsInteger of {do not localize}
-              blr_varying, blr_text: begin
+              blr_varying, blr_text:
+              begin
                 DataType := ftString;
                 Size := Query.Current.ByName('RDB$FIELD_LENGTH').AsInteger; {do not localize}
               end;
               blr_float, blr_double, blr_d_float: DataType := ftFloat;
-              blr_short: begin
+              blr_short:
+              begin
                 sqlscale := Query.Current.ByName('RDB$FIELD_SCALE').AsInteger; {do not localize}
                 if (sqlscale = 0) then
                   DataType := ftSmallInt
-                else begin
+                else
+                begin
                   DataType := ftBCD;
                   Precision := 4;
                 end;
               end;
-              blr_long: begin
+              blr_long:
+              begin
                 sqlscale := Query.Current.ByName('RDB$FIELD_SCALE').AsInteger; {do not localize}
                 if (sqlscale = 0) then
                   DataType := ftInteger
-                else if (sqlscale >= (-4)) then begin
+                else if (sqlscale >= (-4)) then
+                begin
                   DataType := ftBCD;
                   Precision := 9;
-                end else
+                end
+                else
                   DataType := ftFloat;
               end;
-              blr_int64: begin
+              blr_int64:
+              begin
                 sqlscale := Query.Current.ByName('RDB$FIELD_SCALE').AsInteger; {do not localize}
                 if (sqlscale = 0) then
                   DataType := ftLargeInt
-                else if (sqlscale >= (-4)) then begin
+                else if (sqlscale >= (-4)) then
+                begin
                   DataType := ftBCD;
                   Precision := 18;
-                end else
+                end
+                else
                   DataType := ftFloat;
               end;
               blr_timestamp: DataType := ftDateTime;
@@ -374,7 +384,8 @@ begin
                   DataType := ftMemo
                 else
                   DataType := ftBlob;
-              blr_quad: begin
+              blr_quad:
+              begin
                 DataType := ftUnknown;
                 Size := sizeof (TISC_QUAD);
               end;
@@ -390,7 +401,8 @@ begin
               InternalCalcField := False;
             if ((not InternalCalcField) and
                  Query.Current.ByName('RDB$DEFAULT_VALUE').IsNull and {do not localize}
-                 (Query.Current.ByName('RDB$NULL_FLAG').AsInteger = 1) )then begin {do not localize}
+                 (Query.Current.ByName('RDB$NULL_FLAG').AsInteger = 1) )then {do not localize}
+            begin
               Attributes := [faRequired];
               Required := True;
             end;
@@ -425,36 +437,36 @@ begin
     if (ixPrimary in Options) then
     begin
      Query.SQL.Text := 'Alter Table ' + {do not localize}
-       FormatIdentifier(Database.SQLDialect, FTableName) +
+       QuoteIdentifier(Database.SQLDialect, FTableName) +
        ' Add CONSTRAINT ' +   {do not localize}
-       FormatIdentifier(Database.SQLDialect, Name)
+       QuoteIdentifier(Database.SQLDialect, Name)
        + ' Primary Key (' + {do not localize}
        FormatFieldsList(Fields) +
        ')';
     end
     else if ([ixUnique, ixDescending] * Options = [ixUnique, ixDescending]) then
       Query.SQL.Text := 'Create unique Descending Index ' + {do not localize}
-                        FormatIdentifier(Database.SQLDialect, Name) +
+                        QuoteIdentifier(Database.SQLDialect, Name) +
                         ' on ' + {do not localize}
-                        FormatIdentifier(Database.SQLDialect, FTableName) +
+                        QuoteIdentifier(Database.SQLDialect, FTableName) +
                         ' (' + FieldList + ')'
     else if (ixUnique in Options) then
       Query.SQL.Text := 'Create unique Index ' + {do not localize}
-                        FormatIdentifier(Database.SQLDialect, Name) +
+                        QuoteIdentifier(Database.SQLDialect, Name) +
                         ' on ' + {do not localize}
-                        FormatIdentifier(Database.SQLDialect, FTableName) +
+                        QuoteIdentifier(Database.SQLDialect, FTableName) +
                         ' (' + FieldList + ')'
     else if (ixDescending in Options) then
       Query.SQL.Text := 'Create Descending Index ' + {do not localize}
-                        FormatIdentifier(Database.SQLDialect, Name) +
+                        QuoteIdentifier(Database.SQLDialect, Name) +
                         ' on ' + {do not localize}
-                        FormatIdentifier(Database.SQLDialect, FTableName) +
+                        QuoteIdentifier(Database.SQLDialect, FTableName) +
                         ' (' + FieldList + ')'
     else
       Query.SQL.Text := 'Create Index ' + {do not localize}
-                        FormatIdentifier(Database.SQLDialect, Name) +
+                        QuoteIdentifier(Database.SQLDialect, Name) +
                         ' on ' + {do not localize}
-                        FormatIdentifier(Database.SQLDialect, FTableName) +
+                        QuoteIdentifier(Database.SQLDialect, FTableName) +
                         ' (' + FieldList + ')';
     Query.Prepare;
     Query.ExecQuery;
@@ -475,7 +487,7 @@ var
       Query.Database := DataBase;
       Query.Transaction := Transaction;
       Query.SQL.Text := 'Drop index ' +  {do not localize}
-                         FormatIdentifier(Database.SQLDialect, Name);
+                         QuoteIdentifier(Database.SQLDialect, Name);
       Query.Prepare;
       Query.ExecQuery;
       IndexDefs.Updated := False;
@@ -494,11 +506,13 @@ var
       Query.SQL.Text := 'Select ''foo'' from RDB$RELATION_CONSTRAINTS ' +
         'where RDB$RELATION_NAME = ' +
         '''' +
-        FormatIdentifierValue(Database.SQLDialect, FTableName) +
+        FormatIdentifierValue(Database.SQLDialect,
+          QuoteIdentifier(DataBase.SQLDialect, FTableName)) +
         ''' ' +
         ' AND RDB$CONSTRAINT_NAME = ' +
         '''' +
-        FormatIdentifierValue(Database.SQLDialect, Name) +
+        FormatIdentifierValue(Database.SQLDialect,
+          QuoteIdentifier(DataBase.SQLDialect, Name)) +
         ''' ' +
         'AND RDB$CONSTRAINT_TYPE = ''PRIMARY KEY''';
       Query.Prepare;
@@ -507,9 +521,9 @@ var
       begin
         Query.Close;
         Query.SQL.Text := 'Alter Table ' +  {do not localize}
-          FormatIdentifier(Database.SQLDialect, FTableName) +
+          QuoteIdentifier(DataBase.SQLDialect, FTableName) +
           ' Drop Constraint ' +
-          FormatIdentifier(Database.SQLDialect, Name);
+          QuoteIdentifier(DataBase.SQLDialect, Name);
         Query.Prepare;
         Query.ExecQuery;
         IndexDefs.Updated := False;
@@ -529,11 +543,13 @@ var
       Query.SQL.Text := 'Select RDB$CONSTRAINT_NAME from RDB$RELATION_CONSTRAINTS ' +
         'where RDB$RELATION_NAME = ' +
         '''' +
-        FormatIdentifierValue(Database.SQLDialect, FTableName) +
+        FormatIdentifierValue(Database.SQLDialect,
+          QuoteIdentifier(DataBase.SQLDialect, FTableName)) +
         ''' ' +
         'AND RDB$INDEX_NAME = ' +
         '''' +
-        FormatIdentifierValue(Database.SQLDialect, Name) +
+        FormatIdentifierValue(Database.SQLDialect,
+          QuoteIdentifier(DataBase.SQLDialect, Name)) +
         ''' ' +
         'AND RDB$CONSTRAINT_TYPE = ''PRIMARY KEY''';
       Query.Prepare;
@@ -542,9 +558,9 @@ var
       begin
         Query.Close;
         Query.SQL.Text := 'Alter Table ' +  {do not localize}
-          FormatIdentifier(Database.SQLDialect, FTableName) +
+          QuoteIdentifier(DataBase.SQLDialect, FTableName) +
           ' Drop Constraint ' +
-          FormatIdentifier(Database.SQLDialect, Query.Current.ByName('RDB$CONSTRAINT_NAME').AsString);
+          QuoteIdentifier(DataBase.SQLDialect, Query.Current.ByName('RDB$CONSTRAINT_NAME').AsString);
         Query.Prepare;
         Query.ExecQuery;
         IndexDefs.Updated := False;
@@ -646,7 +662,8 @@ begin
     'I.RDB$SEGMENT_COUNT, S.RDB$FIELD_NAME from RDB$INDICES I, ' + {do not localize}
     'RDB$INDEX_SEGMENTS S where I.RDB$INDEX_NAME = S.RDB$INDEX_NAME '+ {do not localize}
     'and I.RDB$RELATION_NAME = ' + '''' + {do not localize}
-     FormatIdentifierValue(Database.SQLDialect, FTableName) + '''';
+     FormatIdentifierValue(Database.SQLDialect,
+       QuoteIdentifier(DataBase.SQLDialect, FTableName)) + '''';
     Query.Prepare;
     Query.ExecQuery;
     while (not Query.EOF) and (Query.Next <> nil) do
@@ -670,7 +687,8 @@ begin
           SubQuery.SQL.Text :=
          'Select RDB$FIELD_NAME from RDB$INDEX_SEGMENTS where RDB$INDEX_NAME = ' + {do not localize}
           '''' +
-          FormatIdentifierValue(Database.SQLDialect, Name) +
+          FormatIdentifierValue(Database.SQLDialect,
+            QuoteIdentifier(DataBase.SQLDialect, Name)) +
           '''' + 'ORDER BY RDB$FIELD_POSITION'; {do not localize}
           SubQuery.Prepare;
           SubQuery.ExecQuery;
@@ -716,7 +734,8 @@ begin
     Query.SQL.Text :=
     'Select USER from RDB$RELATIONS where RDB$RELATION_NAME = ' + {do not localize}
     '''' +
-    FormatIdentifierValue(Database.SQLDialect, FTableName) + '''';
+    FormatIdentifierValue(Database.SQLDialect,
+      QuoteIdentifier(DataBase.SQLDialect, FTableName)) + '''';
     Query.Prepare;
     Query.ExecQuery;
     Result := not Query.EOF;
@@ -758,23 +777,23 @@ var
         case DataType of
           ftString:
             FieldList := FieldList +
-              FormatIdentifier(Database.SQLDialect, Name) +
+              QuoteIdentifier(DataBase.SQLDialect, Name) +
               ' VARCHAR(' + IntToStr(Size) + ')'; {do not localize}
           ftFixedChar:
             FieldList := FieldList +
-              FormatIdentifier(Database.SQLDialect, Name) +
+              QuoteIdentifier(DataBase.SQLDialect, Name) +
               ' CHAR(' + IntToStr(Size) + ')'; {do not localize}
           ftBoolean, ftSmallint, ftWord:
             FieldList := FieldList +
-              FormatIdentifier(Database.SQLDialect, Name) +
+              QuoteIdentifier(DataBase.SQLDialect, Name) +
               ' SMALLINT'; {do not localize}
           ftInteger:
             FieldList := FieldList +
-              FormatIdentifier(Database.SQLDialect, Name) +
+              QuoteIdentifier(DataBase.SQLDialect, Name) +
               ' INTEGER'; {do not localize}
           ftFloat, ftCurrency:
             FieldList := FieldList +
-              FormatIdentifier(Database.SQLDialect, Name) +
+              QuoteIdentifier(DataBase.SQLDialect, Name) +
               ' DOUBLE PRECISION'; {do not localize}
           ftBCD: begin
             if (Database.SQLDialect = 1) then begin
@@ -785,44 +804,44 @@ var
             end;
             if (Precision <= 4 ) then
               FieldList := FieldList +
-                FormatIdentifier(Database.SQLDialect, Name) +
+                QuoteIdentifier(DataBase.SQLDialect, Name) +
                 ' Numeric(18, 4)' {do not localize}
             else
               FieldList := FieldList +
-                FormatIdentifier(Database.SQLDialect, Name) +
+                QuoteIdentifier(DataBase.SQLDialect, Name) +
                 ' Numeric(' + IntToStr(Precision) + ', 4)'; {do not localize}
           end;
           ftDate:
             FieldList := FieldList +
-              FormatIdentifier(Database.SQLDialect, Name) +
+              QuoteIdentifier(DataBase.SQLDialect, Name) +
               ' DATE'; {do not localize}
           ftTime:
             FieldList := FieldList +
-              FormatIdentifier(Database.SQLDialect, Name) +
+              QuoteIdentifier(DataBase.SQLDialect, Name) +
               ' TIME'; {do not localize}
           ftDateTime:
             if (Database.SQLDialect = 1) then
               FieldList := FieldList +
-              FormatIdentifier(Database.SQLDialect, Name) +
+              QuoteIdentifier(DataBase.SQLDialect, Name) +
               ' DATE' {do not localize}
             else
               FieldList := FieldList +
-              FormatIdentifier(Database.SQLDialect, Name) +
+              QuoteIdentifier(DataBase.SQLDialect, Name) +
               ' TIMESTAMP'; {do not localize}
           ftLargeInt:
             if (Database.SQLDialect = 1) then
               IBError(ibxeFieldUnsupportedType,[nil])
             else
               FieldList := FieldList +
-                FormatIdentifier(Database.SQLDialect, Name) +
+                QuoteIdentifier(DataBase.SQLDialect, Name) +
                 ' Numeric(18, 0)'; {do not localize}
           ftBlob, ftMemo:
             FieldList := FieldList +
-              FormatIdentifier(Database.SQLDialect, Name) +
+              QuoteIdentifier(DataBase.SQLDialect, Name) +
               ' BLOB SUB_TYPE 1'; {do not localize}
           ftBytes, ftVarBytes, ftGraphic..ftTypedBinary:
             FieldList := FieldList +
-              FormatIdentifier(Database.SQLDialect, Name) +
+              QuoteIdentifier(DataBase.SQLDialect, Name) +
               ' BLOB SUB_TYPE 0'; {do not localize}
           ftUnknown, ftADT, ftArray, ftReference, ftDataSet,
           ftCursor, ftWideString, ftAutoInc:
@@ -848,14 +867,14 @@ var
       Query.Database := Database;
       Query.transaction := Transaction;
       Query.SQL.Text := 'Create Table ' +
-        FormatIdentifier(Database.SQLDialect, FTableName) +
+        QuoteIdentifier(DataBase.SQLDialect, FTableName) +
         ' (' + FieldList; {do not localize}
       for I := 0 to IndexDefs.Count - 1 do
       with IndexDefs[I] do
         if ixPrimary in Options then
         begin
           Query.SQL.Text := Query.SQL.Text + ', CONSTRAINT ' +
-            FormatIdentifier(Database.SQLDialect, Name) +
+            QuoteIdentifier(DataBase.SQLDialect, Name) +
             ' Primary Key (' +
             FormatFieldsList(Fields) +
             ')';
@@ -895,7 +914,7 @@ begin
     Query.Database := DataBase;
     Query.Transaction := Transaction;
     Query.SQL.Text := 'drop table ' +  {do not localize}
-      FormatIdentifier(Database.SQLDialect, FTableName);
+      QuoteIdentifier(DataBase.SQLDialect, FTableName);
     Query.Prepare;
     Query.ExecQuery;
   finally
@@ -914,7 +933,7 @@ begin
     Query.Database := DataBase;
     Query.Transaction := Transaction;
     Query.SQL.Text := 'delete from ' + {do not localize}
-      FormatIdentifier(Database.SQLDialect, FTableName);
+      QuoteIdentifier(DataBase.SQLDialect, FTableName);
     Query.Prepare;
     Query.ExecQuery;
     if Active then
@@ -958,7 +977,8 @@ begin
     Query.SQL.Text := 'Select RDB$SYSTEM_FLAG, RDB$DBKEY_LENGTH ' + {do not localize}
                     'from RDB$RELATIONS where RDB$RELATION_NAME = ' + {do not localize}
                     '''' +
-                    FormatIdentifierValue(Database.SQLDialect, FTableName) + '''';
+                    FormatIdentifierValue(Database.SQLDialect,
+                      QuoteIdentifier(DataBase.SQLDialect, FTableName)) + '''';
     Query.Prepare;
     Query.ExecQuery;
     if (Query.Current[0].AsInteger <> 0) or
@@ -1048,7 +1068,7 @@ var
   i: Integer;
 begin
   if Database.SQLDialect = 1 then begin
-    Value := FormatIdentifier(Database.SQLDialect, Value);
+    Value := QuoteIdentifier(Database.SQLDialect, Value);
     Result := StringReplace (Value, ';', ', ', [rfReplaceAll]);
   end
   else begin
@@ -1058,9 +1078,9 @@ begin
     begin
       FieldName := ExtractFieldName(Value, i);
       if Result = '' then
-        Result := FormatIdentifier(Database.SQLDialect, FieldName)
+        Result := QuoteIdentifier(Database.SQLDialect, FieldName)
       else
-        Result := Result + ', ' + FormatIdentifier(Database.SQLDialect, FieldName);
+        Result := Result + ', ' + QuoteIdentifier(Database.SQLDialect, FieldName);
     end;
   end;
 end;
@@ -1293,9 +1313,9 @@ begin
     OrderByStr := FormatFieldsList(FPrimaryIndexFields);
   SQL := TStringList.Create;
   SQL.Text := 'select ' + {do not localize}
-    FormatIdentifier(Database.SQLDialect, FTableName) + '.*, '
+    QuoteIdentifier(DataBase.SQLDialect, FTableName) + '.*, ' {do not localize}
     + 'RDB$DB_KEY as IBX_INTERNAL_DBKEY from ' {do not localize}
-    + FormatIdentifier(Database.SQLDialect, FTableName);
+    + QuoteIdentifier(DataBase.SQLDialect, FTableName);
   if Filtered and (Filter <> '') then
   begin
     SQL.Text := SQL.Text + ' where ' + Filter; {do not localize}
@@ -1315,18 +1335,18 @@ begin
       if i > 0 then
         SQL.Text := SQL.Text + 'AND ';
       SQL.Text := SQL.Text +
-        FormatIdentifier(Database.SQLDialect, FDetailFieldsList.Strings[i]) +
+        QuoteIdentifier(DataBase.SQLDialect, FDetailFieldsList.Strings[i]) +
         ' = :' +
-        FormatIdentifier(Database.SQLDialect, FMasterFieldsList.Strings[i]);
+        QuoteIdentifier(DataBase.SQLDialect, FMasterFieldsList.Strings[i]);
     end;
   end;
   if OrderByStr <> '' then
     SQL.Text := SQL.Text + ' order by ' + OrderByStr; {do not localize}
   SelectSQL.Assign(SQL);
   RefreshSQL.Text := 'select ' + {do not localize}
-    FormatIdentifier(Database.SQLDialect, FTableName) + '.*, '
+    QuoteIdentifier(DataBase.SQLDialect, FTableName) + '.*, ' {do not localize}
     + 'RDB$DB_KEY as IBX_INTERNAL_DBKEY from ' {do not localize}
-    + FormatIdentifier(Database.SQLDialect, FTableName) +
+    + QuoteIdentifier(DataBase.SQLDialect, FTableName) +
     ' where RDB$DB_KEY = :IBX_INTERNAL_DBKEY'; {do not localize}
   WhereDBKeyRefreshSQL.Assign(RefreshSQL);
   InternalPrepare;
@@ -1355,17 +1375,17 @@ var
               WhereAllFieldList := WhereAllFieldList + ' AND ';
           end;
           InsertFieldList := InsertFieldList +
-            FormatIdentifier(Database.SQLDialect, Name);
+            QuoteIdentifier(DataBase.SQLDialect, Name);
           InsertParamList := InsertParamList + ':' +
-            FormatIdentifier(Database.SQLDialect, Name);
+            QuoteIdentifier(DataBase.SQLDialect, Name);
           UpdateFieldList := UpdateFieldList +
-            FormatIdentifier(Database.SQLDialect, Name) +
+            QuoteIdentifier(DataBase.SQLDialect, Name) +
             ' = :' +
-            FormatIdentifier(Database.SQLDialect, Name);
+            QuoteIdentifier(DataBase.SQLDialect, Name);
           if (DataType <> ftBlob) and (DataType <>ftMemo) then
             WhereAllFieldList := WhereAllFieldList +
-              FormatIdentifier(Database.SQLDialect, Name) + ' = :' +
-              FormatIdentifier(Database.SQLDialect, Name);{do not localize}
+              QuoteIdentifier(DataBase.SQLDialect, Name) + ' = :' +
+              QuoteIdentifier(DataBase.SQLDialect, Name);{do not localize}
         end;
       end;
     end;
@@ -1381,8 +1401,8 @@ var
     begin
       tmp := ExtractFieldName(FPrimaryIndexFields, i);
       tmp :=
-        FormatIdentifier(Database.SQLDialect, tmp) +  ' = :' +
-        FormatIdentifier(Database.SQLDialect, tmp);{do not localize}
+        QuoteIdentifier(DataBase.SQLDialect, tmp) +  ' = :' +
+        QuoteIdentifier(DataBase.SQLDialect, tmp);{do not localize}
       if WherePrimaryFieldList <> '' then
         WherePrimaryFieldList :=
           WherePrimaryFieldList + ' AND ' + tmp
@@ -1397,29 +1417,29 @@ begin
   else
   begin
     DeleteSQL.Text := 'delete from ' + {do not localize}
-      FormatIdentifier(Database.SQLDialect, FTableName) +
+      QuoteIdentifier(DataBase.SQLDialect, FTableName) +
       ' where RDB$DB_KEY = ' + ':IBX_INTERNAL_DBKEY'; {do not localize}
     GenerateFieldLists;
     InsertSQL.Text := 'insert into ' + {do not localize}
-      FormatIdentifier(Database.SQLDialect, FTableName) +
+      QuoteIdentifier(DataBase.SQLDialect, FTableName) +
     ' (' + InsertFieldList + {do not localize}
       ') values (' + InsertParamList + ')'; {do not localize}
     ModifySQL.Text := 'update ' +
-      FormatIdentifier(Database.SQLDialect, FTableName) +
+      QuoteIdentifier(DataBase.SQLDialect, FTableName) +
       ' set ' + UpdateFieldList + {do not localize}
       ' where RDB$DB_KEY = :IBX_INTERNAL_DBKEY'; {do not localize}
     WhereAllRefreshSQL.Text := 'select ' +  {do not localize}
-      FormatIdentifier(Database.SQLDialect, FTableName) + '.*, '
+      QuoteIdentifier(DataBase.SQLDialect, FTableName) + '.*, '
       + 'RDB$DB_KEY as IBX_INTERNAL_DBKEY from ' {do not localize}
-      + FormatIdentifier(Database.SQLDialect, FTableName) +
+      + QuoteIdentifier(DataBase.SQLDialect, FTableName) +
       ' where ' + WhereAllFieldList; {do not localize}
     if FPrimaryIndexFields <> '' then
     begin
       GenerateWherePrimaryFieldList;
       WherePrimaryRefreshSQL.Text := 'select ' + {do not localize}
-        FormatIdentifier(Database.SQLDialect, FTableName) + '.*, ' {do not localize}
+        QuoteIdentifier(DataBase.SQLDialect, FTableName) + '.*, ' {do not localize}
         + 'RDB$DB_KEY as IBX_INTERNAL_DBKEY from ' {do not localize}
-        + FormatIdentifier(Database.SQLDialect, FTableName) +
+        + QuoteIdentifier(DataBase.SQLDialect, FTableName) +
         ' where ' + WherePrimaryFieldList; {do not localize}
     end;
     try

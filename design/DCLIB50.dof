@@ -57,7 +57,7 @@ AutoIncBuild=0
 MajorVer=5
 MinorVer=0
 Release=13
-Build=5
+Build=10
 Debug=0
 PreRelease=0
 Special=0
@@ -68,7 +68,7 @@ CodePage=1252
 [Version Info Keys]
 CompanyName=Inprise Corporation
 FileDescription=Interbase Express Design Package
-FileVersion=5.0.13.5
+FileVersion=5.0.13.10
 InternalName=IBX50
 LegalCopyright=Copyright © 1997-1999 Inprise Corporation
 LegalTrademarks=

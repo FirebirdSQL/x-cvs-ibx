@@ -30,9 +30,9 @@ unit IBStoredProc;
 
 interface
 
-uses Windows, SysUtils, Graphics, Classes, Controls, Db, StdVCL, IB,
-  IBDatabase, IBCustomDataSet, IBHeader, IBSQL, IBUtils;
-
+uses SysUtils, Classes, DB, IB, IBDatabase, IBCustomDataSet,
+     IBHeader, IBSQL, IBUtils;
+     
 { TIBStoredProc }
 type
 

@@ -165,9 +165,11 @@ resourcestring
   SInvalidOnErrorResult = 'Unexpected onError return value';
   SInvalidOnStatusResult = 'Unexpected onStatus return value';
 
-  SInterbaseExpressVersion = 'InterbaseExpress 4.2';
+  SInterbaseExpressVersion = 'InterbaseExpress 4.3';
   SEditSQL = 'Edit SQL';
-  
+  SDPBConstantUnknownEx = 'DPB Constant (%s) is unknown';
+  STPBConstantUnknownEx = 'TPB Constant (%s) is unknown';
+
 implementation
 
 end.

@@ -1935,7 +1935,7 @@ begin
            (DPBVal <= isc_dpb_last_dpb_constant) then
           IBError(ibxeDPBConstantNotSupported, [DPBConstantNames[DPBVal]])
         else
-          IBError(ibxeDPBConstantUnknown, [sl.Names[i]]);
+          IBError(ibxeDPBConstantUnknownEx, [sl.Names[i]]);
       end;
     end;
   end;
@@ -2004,7 +2004,7 @@ begin
            (TPBVal <= isc_tpb_last_tpb_constant) then
           IBError(ibxeTPBConstantNotSupported, [TPBConstantNames[TPBVal]])
         else
-          IBError(ibxeTPBConstantUnknown, [TPBVal]);
+          IBError(ibxeTPBConstantUnknownEx, [sl.Names[i]]);
       end;
     end;
   end;

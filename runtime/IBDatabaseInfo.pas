@@ -18,8 +18,6 @@
 {    an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either              }
 {    express or implied. See the License for the specific language       }
 {    governing rights and limitations under the License.                 }
-{    The Original Code was created by InterBase Software Corporation     }
-{       and its successors.                                              }
 {    Portions created by Inprise Corporation are Copyright (C) Inprise   }
 {       Corporation. All Rights Reserved.                                }
 {    Contributor(s): Jeff Overcash                                       }
@@ -31,8 +29,7 @@ unit IBDatabaseInfo;
 interface
 
 uses
-  Windows, SysUtils, Classes, Forms, ExtCtrls,
-  IBHeader, IBExternals, IB, IBDatabase;
+  SysUtils, Classes, IBHeader, IBExternals, IB, IBDatabase;
 
 type
 
@@ -80,13 +77,13 @@ type
     function GetUpdateCount: TStringList;
     function GetOperationCounts(DBInfoCommand: Integer; FOperation: TStringList): TStringList;
     function GetReadOnly: Long;
-    function GetLongDatabaseInfo(DatabaseInfoCommand: Integer): Long;
     function GetStringDatabaseInfo(DatabaseInfoCommand: Integer): String;
     function GetDBSQLDialect: Long;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     function Call(ErrCode: ISC_STATUS; RaiseError: Boolean): ISC_STATUS;
+    function GetLongDatabaseInfo(DatabaseInfoCommand: Integer): Long;
     property Allocation: Long read GetAllocation;
     property BaseLevel: Long read GetBaseLevel;
     property DBFileName: String read GetDBFileName;

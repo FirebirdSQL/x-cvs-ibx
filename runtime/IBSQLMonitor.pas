@@ -310,7 +310,8 @@ constructor TIBSQLMonitorHook.Create;
 begin
   inherited Create;
   FEventsCreated := false;
-  FTraceFlags := [tfqPrepare .. tfMisc];
+  FTraceFlags := [tfQPrepare..tfMisc];
+  FEnabled := true;
 end;
 
 procedure TIBSQLMonitorHook.CreateEvents;
@@ -342,8 +343,6 @@ begin
   Sa.lpSecurityDescriptor := @Sd;
   Sa.bInheritHandle := true;
 
-  FTraceFlags := [tfQPrepare..tfMisc];
-  FEnabled := true;
   FSharedBuffer := CreateFileMapping($FFFFFFFF, @sa, PAGE_READWRITE,
                        0, cMonitorHookSize, PChar(MonitorHookNames[1]));
 
@@ -772,11 +771,6 @@ begin
       else
         Sleep(50);
   end;
-  { This little bit is to unlock the reader thread.  bDone is normally true
-    at this point and therefor this will allow the reader thread to stop
-    waiting }
-{  WriteSQLData(' ', tfMisc);
-  WriteToBuffer;   }
 end;
 
 procedure TWriterThread.Lock;

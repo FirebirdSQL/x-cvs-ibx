@@ -31,8 +31,8 @@ unit IBBlob;
 interface
 
 uses
-  Windows, SysUtils, Classes, Forms, IBHeader, IBErrorCodes, IBExternals,
-  DB, IB, IBDatabase, IBUtils;
+  SysUtils, Classes, IBHeader, IBErrorCodes, IBExternals, DB, IB, IBDatabase, IBUtils;
+
 
 const
   DefaultBlobSegmentSize = 16 * 1024; 

@@ -39,7 +39,7 @@ unit IBInstall;
 
 interface
 
-uses Windows, TypInfo,SysUtils, Classes, IB, IBInstallHeader, IBIntf, IBXConst;
+uses TypInfo,SysUtils, Classes, IB, IBInstallHeader, IBIntf, IBXConst;
 
 type
 

@@ -424,7 +424,8 @@ end;
 
 function TIBXSQLVAR.AdjustScale(Value: Int64; Scale: Integer): Double;
 var
-  Scaling, i: Integer;
+  Scaling : Int64;
+  i: Integer;
   Val: Double;
 begin
   Scaling := 1; Val := Value;
@@ -447,7 +448,8 @@ end;
 
 function TIBXSQLVAR.AdjustScaleToInt64(Value: Int64; Scale: Integer): Int64;
 var
-  Scaling, i: Integer;
+  Scaling : Int64;
+  i: Integer;
   Val: Int64;
 begin
   Scaling := 1; Val := Value;
@@ -463,10 +465,11 @@ end;
 
 function TIBXSQLVAR.AdjustScaleToCurrency(Value: Int64; Scale: Integer): Currency;
 var
-  Scaling, i : Integer;
+  Scaling : Int64;
+  i : Integer;
   FractionText, PadText, CurrText: string;
 begin
-  result := Value;
+  Result := 0;
   Scaling := 1;
   if Scale > 0 then
   begin
@@ -489,9 +492,12 @@ begin
       try
         result := StrToCurr(CurrText);
       except
-        on E: Exception do IBError(ibxeInvalidDataConversion, [nil]);
+        on E: Exception do
+          IBError(ibxeInvalidDataConversion, [nil]);
       end;
-    end;
+    end
+    else
+      result := Value;
 end;
 
 function TIBXSQLVAR.GetAsCurrency: Currency;
@@ -1294,19 +1300,23 @@ begin
       if FParent.FNames[i] = FName then
       begin
         xvar := FParent[i];
-        xvar.FXSQLVAR^.sqlind^ := -1;
+        if Assigned(xvar.FXSQLVAR^.sqlind) then
+          xvar.FXSQLVAR^.sqlind^ := -1;
         xvar.FModified := True;
       end;
-  end else if ((not Value) and IsNullable) then
-  begin
-    for i := 0 to FParent.FCount - 1 do
-      if FParent.FNames[i] = FName then
-      begin
-        xvar := FParent[i];
-        xvar.FXSQLVAR^.sqlind^ := 0;
-        xvar.FModified := True;
-      end;
-  end;
+  end
+  else
+    if ((not Value) and IsNullable) then
+    begin
+      for i := 0 to FParent.FCount - 1 do
+        if FParent.FNames[i] = FName then
+        begin
+          xvar := FParent[i];
+          if Assigned(xvar.FXSQLVAR^.sqlind) then
+            xvar.FXSQLVAR^.sqlind^ := 0;
+          xvar.FModified := True;
+        end;
+    end;
 end;
 
 procedure TIBXSQLVAR.SetIsNullable(Value: Boolean);
@@ -1442,31 +1452,40 @@ var
 begin
   bUnique := True;
   NamesWereEmpty := (FNames.Count = 0);
-  if FXSQLDA <> nil then begin
-    for i := 0 to FCount - 1 do begin
-      with FXSQLVARs[i].Data^ do begin
+  if FXSQLDA <> nil then
+  begin
+    for i := 0 to FCount - 1 do
+    begin
+      with FXSQLVARs[i].Data^ do
+      begin
         if bUnique and (String(relname) <> '') then
         begin
           if FUniqueRelationName = '' then
             FUniqueRelationName := String(relname)
-          else if String(relname) <> FUniqueRelationName then
-          begin
-            FUniqueRelationName := '';
-            bUnique := False;
-          end;
+          else
+            if String(relname) <> FUniqueRelationName then
+            begin
+              FUniqueRelationName := '';
+              bUnique := False;
+            end;
         end;
-        if NamesWereEmpty then begin
+        if NamesWereEmpty then
+        begin
           st := String(aliasname);
-          if st = '' then begin
+          if st = '' then
+          begin
             st := 'F_'; {do not localize}
             aliasname_length := 2;
             j := 1; j_len := 1;
             StrPCopy(aliasname, st + IntToStr(j));
-          end else begin
+          end
+          else
+          begin
             StrPCopy(aliasname, st);
             j := 0; j_len := 0;
           end;
-          while GetXSQLVARByName(String(aliasname)) <> nil do begin
+          while GetXSQLVARByName(String(aliasname)) <> nil do
+          begin
             Inc(j); j_len := Length(IntToStr(j));
             if j_len + aliasname_length > 31 then
               StrPCopy(aliasname,
@@ -1532,7 +1551,6 @@ begin
           FXSQLVARs[i] := TIBXSQLVAR.Create(self, FSQL);
         FXSQLVARs[i].FXSQLVAR := p;
         p := Pointer(PChar(p) + sizeof(FXSQLDA^.sqlvar));
-//        FNames.Add('');
       end;
       FSize := FCount;
     end;

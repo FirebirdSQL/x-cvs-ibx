@@ -634,6 +634,7 @@ begin
   FHandle := nil;
   FLoginPrompt := True;
   FTraceFlags := [];
+  FOutputbuffer := nil;
 end;
 
 destructor TIBCustomService.Destroy;
@@ -646,6 +647,7 @@ begin
     FSPB := nil;
     FParams.Free;
   end;
+  ReallocMem(FOutputBuffer, 0);
   inherited Destroy;
 end;
 
@@ -1730,7 +1732,7 @@ begin
   for i := 0 to High(FUserInfo) do
     FUserInfo[i].Free;
   FUserInfo := nil;
-  inherited destroy;
+  inherited Destroy;
 end;
 
 procedure TIBSecurityService.FetchUserInfo;

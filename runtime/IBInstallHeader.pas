@@ -40,8 +40,6 @@ unit IBInstallHeader;
 
 interface
 
-uses  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs;
-
 { InterBase Install API interface }
 type
   OPTIONS_HANDLE = integer;

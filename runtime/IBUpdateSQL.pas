@@ -30,8 +30,7 @@ unit IBUpdateSQL;
 
 interface
 
-uses Windows, SysUtils, Graphics, Classes, Controls, Db, StdVCL,
-     IB, IBCustomDataSet, IBQuery;
+uses SysUtils, Classes, DB, IB, IBCustomDataSet, IBQuery;
 
 type
 { TIBUpdateSQL }

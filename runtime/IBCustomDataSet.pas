@@ -239,11 +239,11 @@ type
     function GetModifySQL: TStrings;
     function GetTransaction: TIBTransaction;
     function GetTRHandle: PISC_TR_HANDLE;
-    procedure InternalDeleteRecord(Qry: TIBSQL; Buff: Pointer);
+    procedure InternalDeleteRecord(Qry: TIBSQL; Buff: Pointer); virtual;
     function InternalLocate(const KeyFields: string; const KeyValues: Variant;
                             Options: TLocateOptions): Boolean; virtual;
-    procedure InternalPostRecord(Qry: TIBSQL; Buff: Pointer);
-    procedure InternalRevertRecord(RecordNumber: Integer);
+    procedure InternalPostRecord(Qry: TIBSQL; Buff: Pointer); virtual;
+    procedure InternalRevertRecord(RecordNumber: Integer); virtual;
     function IsVisible(Buffer: PChar): Boolean;
     procedure SaveOldBuffer(Buffer: PChar);
     procedure SetBufferChunks(Value: Integer);
@@ -269,7 +269,7 @@ type
                         Buffer: PChar);
     procedure WriteRecordCache(RecordNumber: Integer; Buffer: PChar);
     function InternalGetRecord(Buffer: PChar; GetMode: TGetMode;
-                       DoCheck: Boolean): TGetResult;
+                       DoCheck: Boolean): TGetResult; virtual;
 
   protected
     procedure ActivateConnection;
@@ -278,13 +278,13 @@ type
     procedure CheckDatasetClosed;
     procedure CheckDatasetOpen;
     function GetActiveBuf: PChar;
-    procedure InternalBatchInput(InputObject: TIBBatchInput);
-    procedure InternalBatchOutput(OutputObject: TIBBatchOutput);
+    procedure InternalBatchInput(InputObject: TIBBatchInput); virtual;
+    procedure InternalBatchOutput(OutputObject: TIBBatchOutput); virtual;
     procedure InternalPrepare; virtual;
     procedure InternalUnPrepare; virtual;
     procedure InternalExecQuery; virtual;
     procedure InternalRefreshRow; virtual;
-    procedure InternalSetParamsFromCursor;
+    procedure InternalSetParamsFromCursor; virtual;
     procedure CheckNotUniDirectional;
 
     { IProviderSupport }
@@ -327,7 +327,7 @@ type
     procedure InternalClose; override;
     procedure InternalDelete; override;
     procedure InternalFirst; override;
-    function InternalGetFieldData(Field: TField; Buffer: Pointer): Boolean;
+    function InternalGetFieldData(Field: TField; Buffer: Pointer): Boolean; virtual;
     procedure InternalGotoBookmark(Bookmark: Pointer); override;
     procedure InternalHandleException; override;
     procedure InternalInitFieldDefs; override;
@@ -336,7 +336,7 @@ type
     procedure InternalOpen; override;
     procedure InternalPost; override;
     procedure InternalRefresh; override;
-    procedure InternalSetFieldData(Field: TField; Buffer: Pointer);
+    procedure InternalSetFieldData(Field: TField; Buffer: Pointer); virtual;
     procedure InternalSetToRecord(Buffer: PChar); override;
     function IsCursorOpen: Boolean; override;
     procedure ReQuery;
@@ -2948,7 +2948,7 @@ begin
             DataType := FieldType;
             Size := FieldSize;
             Precision := FieldPrecision;
-            Required := False;
+            Required := not FieldNullable;
             InternalCalcField := False;
             if (FieldName <> '') and (RelationName <> '') then
             begin
@@ -3736,7 +3736,7 @@ procedure TIBCustomDataSet.SetFieldData(Field: TField; Buffer: Pointer);
 var
   lTempCurr : System.Currency;
 begin
-  if Field.DataType = ftBCD then
+  if (Field.DataType = ftBCD) and (Buffer <> nil) then
   begin
     BCDToCurr(TBCD(Buffer^), lTempCurr);
     InternalSetFieldData(Field, @lTempCurr);
@@ -3765,7 +3765,7 @@ end;
 destructor TIBDataSetUpdateObject.Destroy;
 begin
   FRefreshSQL.Free;
-  inherited destroy;
+  inherited Destroy;
 end;
 
 procedure TIBDataSetUpdateObject.SetRefreshSQL(Value: TStrings);
@@ -3804,6 +3804,7 @@ begin
   if not (FField.DataSet.State in [dsEdit, dsInsert]) then
     IBError(ibxeNotEditing, [nil]);
   TIBCustomDataSet(FField.DataSet).RecordModified(True);
+  TBlobField(FField).Modified := true;
   result := FBlobStream.Write(Buffer, Count);
   TIBCustomDataSet(FField.DataSet).DataEvent(deFieldChange, Longint(FField));
 end;

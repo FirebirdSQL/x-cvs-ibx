@@ -336,13 +336,13 @@ implementation
 uses IB, IBQuery, IBStoredProc, IBUpdateSQL, IBCustomDataSet,
      IBIntf, IBSQL, IBSQLMonitor, IBDatabaseInfo, IBEvents,
      IBServices, IBInstall, IBDatabaseEdit, IBTransactionEdit,
-     IBBatchMove, DBLogDlg;
+     IBBatchMove, DBLogDlg, IBExtract;
 
 procedure Register;
 begin
   RegisterComponents(IBPalette1, [TIBTable, TIBQuery,
     TIBStoredProc, TIBDatabase, TIBTransaction, TIBUpdateSQL,
-    TIBDataSet, TIBSQL, TIBDatabaseInfo, TIBSQLMonitor, TIBEvents]);
+    TIBDataSet, TIBSQL, TIBDatabaseInfo, TIBSQLMonitor, TIBEvents, TIBExtract]);
   if (TryIBLoad) and (GetIBClientVersion >= 6) then
     RegisterComponents(IBPalette2, [TIBConfigService, TIBBackupService,
       TIBRestoreService, TIBValidationService, TIBStatisticalService,

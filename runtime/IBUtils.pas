@@ -146,9 +146,8 @@ end;
 
 function QuoteIdentifier(Dialect: Integer; Value: String): String;
 begin
-  Value := Trim(Value);
   if Dialect = 1 then
-    Value := AnsiUpperCase(Value)
+    Value := AnsiUpperCase(Trim(Value))
   else
     Value := '"' + Value + '"';
   Result := Value;
