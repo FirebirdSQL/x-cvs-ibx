@@ -45,7 +45,7 @@ PackageDLLOutputDir=$(DELPHI)\bin
 PackageDCPOutputDir=$(DELPHI)\lib
 SearchPath=
 Packages=VCL50;VCLX50;VCLSMP50;VCLDB50;VCLADO50;ibevnt50;VCLBDE50;VCLDBX50;QRPT50;TEEUI50;TEEDB50;TEE50;DSS50;TEEQR50;VCLMID50;VCLIE50;INETDB50;INET50;NMFAST50;WEBMID50;dclocx50;dclaxserver50;ip50client_D5;IP50_D5;FIRSTCLASS_D5;DDGSTD50;rbIP45;RBUSER45;DDGDb50;JoCustom;Sym400_D5;VCLZip_D5;Doa_d5;filterdlg_d5;RZ25ND50;RZ25DB50;Winshoes70D5;MyIB50
-Conditionals=DEBUG_ONLY;IB6_ONLY
+Conditionals=DEBUG_ONLY
 DebugSourceDirs=
 UsePackages=0
 [Parameters]
@@ -83,8 +83,9 @@ $(DELPHI)\Projects\Bpl\GxComponents5.bpl=GExperts source components
 Count=1
 Item0=$(DELPHI)\ibdac;$(DELPHI)\db;$(DELPHI)\midas
 [HistoryLists\hlConditionals]
-Count=1
-Item0=DEBUG_ONLY;IB6_ONLY
+Count=2
+Item0=DEBUG_ONLY
+Item1=DEBUG_ONLY;IB6_ONLY
 [HistoryLists\hlUnitAliases]
 Count=1
 Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;

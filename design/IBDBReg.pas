@@ -343,13 +343,11 @@ begin
   RegisterComponents(IBPalette1, [TIBTable, TIBQuery,
     TIBStoredProc, TIBDatabase, TIBTransaction, TIBUpdateSQL,
     TIBDataSet, TIBSQL, TIBDatabaseInfo, TIBSQLMonitor, TIBEvents]);
-{$IFDEF IB6_ONLY}
   if (TryIBLoad) and (GetIBClientVersion >= 6) then
     RegisterComponents(IBPalette2, [TIBConfigService, TIBBackupService,
       TIBRestoreService, TIBValidationService, TIBStatisticalService,
       TIBLogService, TIBSecurityService, TIBServerProperties,
       TIBInstall, TIBUninstall]);
-{$ENDIF}
   RegisterClasses([TIBStringField, TIBBCDField]);
   RegisterFields([TIBStringField, TIBBCDField]);
   RegisterPropertyEditor(TypeInfo(TIBFileName), TIBDatabase, 'DatabaseName', TIBFileNameProperty); {do not localize}

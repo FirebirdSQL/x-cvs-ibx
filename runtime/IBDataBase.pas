@@ -99,9 +99,9 @@ const
     'sql_role_name',
     'set_page_buffers',
     'working_directory',
-    'SQL_dialect',
+    'sql_dialect',
     'set_db_readonly',
-    'set_db_SQL_dialect',
+    'set_db_sql_dialect',
     'gfix_attach',
     'gstat_attach'
   );
@@ -1857,7 +1857,8 @@ begin
       and make sure that the name is all lowercase with
       no leading 'isc_dpb_' prefix
     }
-    if (Trim(sl.Names[i]) = '') then continue;
+    if (Trim(sl.Names[i]) = '') then
+      continue;
     ParamName := LowerCase(sl.Names[i]); {mbcs ok}
     ParamValue := Copy(sl[i], Pos('=', sl[i]) + 1, Length(sl[i])); {mbcs ok}
     if (Pos(DPBPrefix, ParamName) = 1) then {mbcs ok}
@@ -1881,8 +1882,10 @@ begin
       isc_dpb_user_name, isc_dpb_password, isc_dpb_password_enc,
       isc_dpb_sys_user_name, isc_dpb_license, isc_dpb_encrypt_key,
       isc_dpb_lc_messages, isc_dpb_lc_ctype,
-      isc_dpb_sql_role_name:
+      isc_dpb_sql_role_name, isc_dpb_sql_dialect:
       begin
+        if DPBVal = isc_dpb_sql_dialect then
+          ParamValue[1] := Char(Ord(ParamValue[1]) - 48);
         DPB := DPB +
                Char(DPBVal) +
                Char(Length(ParamValue)) +
@@ -1932,7 +1935,7 @@ begin
            (DPBVal <= isc_dpb_last_dpb_constant) then
           IBError(ibxeDPBConstantNotSupported, [DPBConstantNames[DPBVal]])
         else
-          IBError(ibxeDPBConstantUnknown, [DPBVal]);
+          IBError(ibxeDPBConstantUnknown, [sl.Names[i]]);
       end;
     end;
   end;
