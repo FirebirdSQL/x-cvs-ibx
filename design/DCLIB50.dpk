@@ -1,0 +1,47 @@
+package DCLIB50;
+
+{$R *.RES}
+{$R 'ibreg.dcr'}
+{$ALIGN ON}
+{ ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{ DEBUGINFO OFF}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS OFF}
+{ LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION ON}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO OFF}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES OFF}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST ON}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $502BFFF4}
+{$DESCRIPTION 'InterBase Data Access Components'}
+{$DESIGNONLY}
+{$IMPLICITBUILD OFF}
+{$DEFINE DEBUG_ONLY}
+{$DEFINE IB6_ONLY}
+
+requires
+  VCLIB50,
+  vcl50,
+  VCLDB50,
+  dsnide50,
+  dcldb50;
+
+contains
+  IBDBReg in 'IBDBReg.pas',
+  IBDatabaseEdit in 'IBDatabaseEdit.pas' {IBDatabaseEditForm},
+  IBTransactionEdit in 'IBTransactionEdit.pas' {IBTransactionEditForm},
+  IBUpdateSQLEditor in 'IBUpdateSQLEditor.pas' {IBUpdateSQLEditForm},
+  IBEventsEditor in 'IBEventsEditor.pas' {IBEventsEditor};
+
+end.
+

@@ -1,0 +1,33 @@
+LANGUAGE LANG_ENGLISH,SUBLANG_ENGLISH_US
+
+
+1 VERSIONINFO LOADONCALL MOVEABLE DISCARDABLE IMPURE
+FILEVERSION %s, %s, %s, %s
+PRODUCTVERSION %0:s, %s, 0, 0
+FILEFLAGSMASK VS_FFI_FILEFLAGSMASK
+FILEOS VOS__WINDOWS32
+FILETYPE VFT_DLL
+{
+ BLOCK "StringFileInfo"
+ {
+  BLOCK "040904E4"
+  {
+   VALUE "CompanyName", "Inprise Corporation\000\000"
+   VALUE "FileDescription", "Interbase Express Run-time Package\000\000"
+   VALUE "FileVersion", "%0:s.%s.%s.%s\000"
+   VALUE "InternalName", "IBX%0:s0\000\000"
+   VALUE "LegalCopyright", "Copyright \251 1997-1999 Inprise Corporation\000\000"
+   VALUE "OriginalFilename", "VCLIB%0:s0.BPL\000\000"
+   VALUE "ProductName", "Interbase Express Run-time Package\000\000"
+   VALUE "ProductVersion", "%0:s.%s\000\000"
+  }
+
+ }
+
+ BLOCK "VarFileInfo"
+ {
+  VALUE "Translation", 1033, 1252
+ }
+
+}
+
